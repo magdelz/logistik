@@ -77,7 +77,7 @@ export function Header() {
           </Button>
 
           <div className="hidden md:flex items-center gap-2">
-            <Button variant="ghost" asChild>
+            <Button variant="outline" asChild>
               <Link href="/login">
                 <LogIn className="mr-2 h-4 w-4" />
                 Войти

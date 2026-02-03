@@ -97,7 +97,7 @@ export default function HomePage() {
                       Рассчитать стоимость
                     </Link>
                   </Button>
-                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-700" asChild>
+                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-700 dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-blue-700 bg-blue-600/30 dark:bg-blue-600/30" asChild>
                     <Link href="/tracking">
                       <Search className="mr-2 h-5 w-5" />
                       Отследить груз
@@ -227,7 +227,7 @@ export default function HomePage() {
                       Зарегистрироваться
                     </Link>
                   </Button>
-                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-700" asChild>
+                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-700 dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-blue-700 bg-blue-600/30 dark:bg-blue-600/30" asChild>
                     <Link href="/contacts">
                       <Globe className="mr-2 h-5 w-5" />
                       Связаться с нами
