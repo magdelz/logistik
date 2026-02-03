@@ -102,25 +102,32 @@ export default function NewOrderPage() {
       const volume = (data.length * data.width * data.height) / 1000000 // cm³ to m³
 
       // Create order in Supabase
+      const totalCost = calculateTotal()
       const { data: order, error } = await supabase
         .from('orders')
         .insert({
           client_id: user.id,
-          pickup_address: `${data.pickupCity}, ${data.pickupAddress}`,
-          delivery_address: `${data.deliveryCity}, ${data.deliveryAddress}`,
+          pickup_city: data.pickupCity,
+          pickup_street: data.pickupAddress,
+          pickup_contact_name: data.pickupContact,
+          pickup_contact_phone: data.pickupPhone,
+          delivery_city: data.deliveryCity,
+          delivery_street: data.deliveryAddress,
+          delivery_contact_name: data.deliveryContact,
+          delivery_contact_phone: data.deliveryPhone,
           cargo_description: data.cargoDescription,
-          cargo_type: data.cargoType,
+          cargo_type: data.cargoType as 'standard' | 'fragile' | 'perishable' | 'hazardous' | 'oversized' | 'valuable',
           weight_kg: data.weight,
           volume_m3: volume,
+          length_cm: data.length,
+          width_cm: data.width,
+          height_cm: data.height,
           declared_value: data.declaredValue || 0,
-          total_cost: calculateTotal(),
+          base_cost: selectedTariff?.price || 0,
+          total_cost: totalCost,
           status: 'pending',
           payment_status: 'pending',
-          sender_name: data.pickupContact,
-          sender_phone: data.pickupPhone,
-          receiver_name: data.deliveryContact,
-          receiver_phone: data.deliveryPhone,
-          notes: data.notes,
+          client_notes: data.notes,
         })
         .select()
         .single()

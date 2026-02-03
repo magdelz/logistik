@@ -16,24 +16,26 @@ interface Notification {
   id: string
   title: string
   message: string
-  type: 'order_update' | 'delivery' | 'system' | 'promotion'
+  type: string
   is_read: boolean
   created_at: string
-  order_id?: string
+  link?: string | null
 }
 
-const notificationIcons = {
+const notificationIcons: Record<string, typeof Package> = {
   order_update: Package,
   delivery: Truck,
   system: AlertCircle,
   promotion: CheckCircle,
+  info: AlertCircle,
 }
 
-const notificationColors = {
+const notificationColors: Record<string, string> = {
   order_update: 'text-blue-500',
   delivery: 'text-green-500',
   system: 'text-orange-500',
   promotion: 'text-purple-500',
+  info: 'text-blue-500',
 }
 
 export function NotificationsDropdown() {
@@ -51,7 +53,7 @@ export function NotificationsDropdown() {
         const { data, error } = await supabase
           .from('notifications')
           .select('*')
-          .eq('profile_id', user.id)
+          .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(10)
 
@@ -121,7 +123,7 @@ export function NotificationsDropdown() {
       await supabase
         .from('notifications')
         .update({ is_read: true })
-        .eq('profile_id', user.id)
+        .eq('user_id', user.id)
         .eq('is_read', false)
 
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
@@ -170,7 +172,7 @@ export function NotificationsDropdown() {
           ) : (
             <AnimatePresence>
               {notifications.map((notification, index) => {
-                const Icon = notificationIcons[notification.type]
+                const Icon = notificationIcons[notification.type] || AlertCircle
                 return (
                   <motion.div
                     key={notification.id}

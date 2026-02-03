@@ -18,32 +18,34 @@ import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, formatCurrency, formatDate, f
 interface Order {
   id: string
   order_number: string
-  tracking_code: string
+  tracking_code: string | null
   status: string
   payment_status: string
-  pickup_address: string
-  delivery_address: string
+  pickup_city: string
+  pickup_street: string
+  pickup_contact_name: string
+  pickup_contact_phone: string
+  delivery_city: string
+  delivery_street: string
+  delivery_contact_name: string
+  delivery_contact_phone: string
   cargo_description: string
   cargo_type: string
   weight_kg: number
-  volume_m3: number
-  declared_value: number
+  volume_m3: number | null
+  declared_value: number | null
   total_cost: number
-  sender_name: string
-  sender_phone: string
-  receiver_name: string
-  receiver_phone: string
-  notes: string
+  client_notes: string | null
   created_at: string
-  estimated_delivery_date: string
-  current_location: string
+  estimated_delivery_date: string | null
+  current_location: string | null
 }
 
 interface StatusHistory {
   id: string
   status: string
-  location: string
-  notes: string
+  location: string | null
+  notes: string | null
   created_at: string
 }
 
@@ -64,7 +66,7 @@ export default function OrderDetailsPage() {
         const { data: orderData, error: orderError } = await supabase
           .from('orders')
           .select('*')
-          .eq('id', params.id)
+          .eq('id', params.id as string)
           .single()
 
         if (orderError) throw orderError
@@ -75,7 +77,7 @@ export default function OrderDetailsPage() {
         const { data: historyData } = await supabase
           .from('order_status_history')
           .select('*')
-          .eq('order_id', params.id)
+          .eq('order_id', params.id as string)
           .order('created_at', { ascending: false })
 
         setStatusHistory(historyData || [])
@@ -176,29 +178,29 @@ export default function OrderDetailsPage() {
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div className="p-4 border rounded-lg">
                       <p className="text-sm text-muted-foreground mb-2">Откуда</p>
-                      <p className="font-medium mb-2">{order.pickup_address}</p>
+                      <p className="font-medium mb-2">{order.pickup_city}, {order.pickup_street}</p>
                       <div className="space-y-1 text-sm">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-muted-foreground" />
-                          {order.sender_name}
+                          {order.pickup_contact_name}
                         </div>
                         <div className="flex items-center gap-2">
                           <Phone className="h-4 w-4 text-muted-foreground" />
-                          {order.sender_phone}
+                          {order.pickup_contact_phone}
                         </div>
                       </div>
                     </div>
                     <div className="p-4 border rounded-lg">
                       <p className="text-sm text-muted-foreground mb-2">Куда</p>
-                      <p className="font-medium mb-2">{order.delivery_address}</p>
+                      <p className="font-medium mb-2">{order.delivery_city}, {order.delivery_street}</p>
                       <div className="space-y-1 text-sm">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-muted-foreground" />
-                          {order.receiver_name}
+                          {order.delivery_contact_name}
                         </div>
                         <div className="flex items-center gap-2">
                           <Phone className="h-4 w-4 text-muted-foreground" />
-                          {order.receiver_phone}
+                          {order.delivery_contact_phone}
                         </div>
                       </div>
                     </div>
@@ -207,7 +209,7 @@ export default function OrderDetailsPage() {
               </Card>
             </SlideUp>
 
-            {order.notes && (
+            {order.client_notes && (
               <SlideUp delay={0.2}>
                 <Card>
                   <CardHeader>
@@ -217,7 +219,7 @@ export default function OrderDetailsPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p>{order.notes}</p>
+                    <p>{order.client_notes}</p>
                   </CardContent>
                 </Card>
               </SlideUp>

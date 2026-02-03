@@ -51,6 +51,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       addresses: {
         Row: {
@@ -110,6 +111,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       tariffs: {
         Row: {
@@ -166,6 +168,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       routes: {
         Row: {
@@ -201,6 +204,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       orders: {
         Row: {
@@ -392,6 +396,7 @@ export interface Database {
           cancelled_at?: string | null
           cancellation_reason?: string | null
         }
+        Relationships: []
       }
       order_status_history: {
         Row: {
@@ -421,6 +426,7 @@ export interface Database {
           created_by?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       activity_logs: {
         Row: {
@@ -459,6 +465,7 @@ export interface Database {
           user_agent?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -491,7 +498,11 @@ export interface Database {
           is_read?: boolean
           created_at?: string
         }
+        Relationships: []
       }
+    }
+    Views: {
+      [_ in never]: never
     }
     Functions: {
       get_user_role: {
@@ -515,6 +526,15 @@ export interface Database {
           total_cost: number
         }[]
       }
+    }
+    Enums: {
+      user_role: UserRole
+      order_status: OrderStatus
+      cargo_type: CargoType
+      payment_status: PaymentStatus
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }

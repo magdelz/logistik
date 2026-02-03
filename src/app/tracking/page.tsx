@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -53,7 +53,7 @@ const statusIcons: Record<string, typeof Package> = {
   cancelled: AlertCircle,
 }
 
-export default function TrackingPage() {
+function TrackingContent() {
   const searchParams = useSearchParams()
   const initialCode = searchParams.get('code') || ''
   
@@ -130,10 +130,7 @@ export default function TrackingPage() {
   const StatusIcon = trackingData ? statusIcons[trackingData.status] || Package : Package
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      
-      <main className="flex-1 py-12">
+    <main className="flex-1 py-12">
         <div className="container max-w-4xl">
           <PageTransition>
             <div className="text-center mb-12">
@@ -327,8 +324,23 @@ export default function TrackingPage() {
             </SlideUp>
           )}
         </div>
-      </main>
-      
+    </main>
+  )
+}
+
+export default function TrackingPage() {
+  return (
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <Suspense fallback={
+        <main className="flex-1 py-12">
+          <div className="container max-w-4xl text-center">
+            <div className="animate-pulse">Загрузка...</div>
+          </div>
+        </main>
+      }>
+        <TrackingContent />
+      </Suspense>
       <Footer />
     </div>
   )

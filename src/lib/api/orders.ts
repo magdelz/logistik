@@ -18,16 +18,10 @@ export async function getOrders(filters: OrderFilters = {}): Promise<PaginatedRe
 
   let query = supabase
     .from('orders')
-    .select(`
-      *,
-      client:profiles!orders_client_id_fkey(id, email, full_name, phone, company_name),
-      manager:profiles!orders_manager_id_fkey(id, email, full_name),
-      tariff:tariffs(id, name, is_express),
-      route:routes(id, name, origin_city, destination_city)
-    `, { count: 'exact' })
+    .select('*', { count: 'exact' })
 
-  if (status) query = query.eq('status', status)
-  if (paymentStatus) query = query.eq('payment_status', paymentStatus)
+  if (status) query = query.eq('status', status as any)
+  if (paymentStatus) query = query.eq('payment_status', paymentStatus as any)
   if (clientId) query = query.eq('client_id', clientId)
   if (managerId) query = query.eq('manager_id', managerId)
   if (dateFrom) query = query.gte('created_at', dateFrom)
@@ -46,7 +40,7 @@ export async function getOrders(filters: OrderFilters = {}): Promise<PaginatedRe
   if (error) throw error
 
   return {
-    data: data as OrderWithRelations[],
+    data: (data || []) as unknown as OrderWithRelations[],
     total: count || 0,
     page,
     pageSize,
@@ -57,28 +51,26 @@ export async function getOrders(filters: OrderFilters = {}): Promise<PaginatedRe
 export async function getOrderById(id: string): Promise<OrderWithRelations | null> {
   const { data, error } = await supabase
     .from('orders')
-    .select(`
-      *,
-      client:profiles!orders_client_id_fkey(id, email, full_name, phone, company_name),
-      manager:profiles!orders_manager_id_fkey(id, email, full_name),
-      tariff:tariffs(*),
-      route:routes(*),
-      status_history:order_status_history(*)
-    `)
+    .select('*')
     .eq('id', id)
     .single()
 
   if (error) throw error
-  return data as OrderWithRelations
+  
+  // Fetch status history separately
+  const { data: historyData } = await supabase
+    .from('order_status_history')
+    .select('*')
+    .eq('order_id', id)
+    .order('created_at', { ascending: false })
+
+  return { ...data, status_history: historyData || [] } as OrderWithRelations
 }
 
 export async function getOrderByTrackingCode(trackingCode: string): Promise<OrderWithRelations | null> {
   const { data, error } = await supabase
     .from('orders')
-    .select(`
-      *,
-      status_history:order_status_history(*)
-    `)
+    .select('*')
     .eq('tracking_code', trackingCode.toUpperCase())
     .single()
 
@@ -86,7 +78,15 @@ export async function getOrderByTrackingCode(trackingCode: string): Promise<Orde
     if (error.code === 'PGRST116') return null
     throw error
   }
-  return data as OrderWithRelations
+  
+  // Fetch status history separately
+  const { data: historyData } = await supabase
+    .from('order_status_history')
+    .select('*')
+    .eq('order_id', data.id)
+    .order('created_at', { ascending: false })
+
+  return { ...data, status_history: historyData || [] } as OrderWithRelations
 }
 
 export async function createOrder(order: InsertTables<'orders'>): Promise<Order> {

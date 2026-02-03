@@ -39,10 +39,12 @@ import { supabase } from '@/lib/supabase/client'
 interface Order {
   id: string
   order_number: string
-  tracking_code: string
+  tracking_code: string | null
   status: string
-  pickup_address: string
-  delivery_address: string
+  pickup_city: string
+  pickup_street: string
+  delivery_city: string
+  delivery_street: string
   cargo_description: string
   weight_kg: number
   total_cost: number
@@ -140,7 +142,7 @@ export default function OrdersPage() {
           .order('created_at', { ascending: false })
 
         if (statusFilter !== 'all') {
-          query = query.eq('status', statusFilter)
+          query = query.eq('status', statusFilter as any)
         }
 
         if (searchTerm) {
@@ -257,7 +259,7 @@ export default function OrdersPage() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <p className="truncate max-w-[200px]">{order.pickup_address?.split(',')[0]} → {order.delivery_address?.split(',')[0]}</p>
+                            <p className="truncate max-w-[200px]">{order.pickup_city} → {order.delivery_city}</p>
                           </TableCell>
                           <TableCell>
                             <div>
