@@ -91,7 +91,7 @@ export default function HomePage() {
                 </p>
                 
                 <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-                  <Button size="lg" variant="secondary" asChild>
+                  <Button size="lg" asChild>
                     <Link href="/calculator">
                       <Calculator className="mr-2 h-5 w-5" />
                       Рассчитать стоимость
@@ -221,7 +221,7 @@ export default function HomePage() {
                   заказами, отслеживания грузов и просмотра истории доставок.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg" variant="secondary" asChild>
+                  <Button size="lg" asChild>
                     <Link href="/register">
                       <Users className="mr-2 h-5 w-5" />
                       Зарегистрироваться
